@@ -1,1 +1,3 @@
-!/src/main/java/group/rxcloud/ava/aigc/config/
+.idea
+
+target/src/main/resources/aws-config.properties
