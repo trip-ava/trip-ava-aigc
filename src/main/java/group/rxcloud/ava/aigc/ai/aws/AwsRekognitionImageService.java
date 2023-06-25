@@ -1,0 +1,103 @@
+package group.rxcloud.ava.aigc.ai.aws;
+
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.rekognition.AmazonRekognition;
+import com.amazonaws.services.rekognition.AmazonRekognitionClientBuilder;
+import com.amazonaws.services.rekognition.model.*;
+import group.rxcloud.ava.aigc.config.AwsConfig;
+import group.rxcloud.ava.aigc.utils.AwsFileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.util.List;
+
+@Service
+public class AwsRekognitionImageService {
+
+    public static final int MAX_LABELS = 10;
+    public static final float MIN_CONFIDENCE = 75F;
+
+    private AmazonRekognition rekognition;
+
+    @Autowired
+    private AwsFileUtils awsFileUtils;
+
+    public static void main(String[] args) throws IOException {
+        AwsRekognitionImageService awsPollyVoiceService = new AwsRekognitionImageService();
+        awsPollyVoiceService.init();
+        awsPollyVoiceService.awsFileUtils = new AwsFileUtils();
+
+        List<Label> labels = awsPollyVoiceService.detectLabelsFromLocalFile("./demo/awsrekognitionimage_output.jpg");
+
+        System.out.println(labels);
+    }
+
+    @PostConstruct
+    public void init() {
+        BasicAWSCredentials awsCreds = new BasicAWSCredentials(AwsConfig.accessKey, AwsConfig.secretKey);
+        AWSStaticCredentialsProvider credentialsProvider = new AWSStaticCredentialsProvider(awsCreds);
+
+        // 创建AmazonRekognition
+        rekognition = AmazonRekognitionClientBuilder.standard()
+                .withCredentials(credentialsProvider)
+                .withRegion(AwsConfig.regions)
+                .build();
+    }
+
+    public List<Label> detectLabelsFromS3(String bucket, String key) {
+        DetectLabelsRequest request = new DetectLabelsRequest()
+                .withImage(new Image()
+                        .withS3Object(new S3Object()
+                                .withName(key)
+                                .withBucket(bucket)))
+                .withMaxLabels(MAX_LABELS)
+                .withMinConfidence(MIN_CONFIDENCE);
+
+        DetectLabelsResult result = rekognition.detectLabels(request);
+        return result.getLabels();
+    }
+
+    public List<Label> detectLabelsFromBytes(byte[] bytes) {
+        ByteBuffer byteBufferFromBytes = awsFileUtils.getByteBufferFromBytes(bytes);
+
+        DetectLabelsRequest request = new DetectLabelsRequest()
+                .withImage(new Image()
+                        .withBytes(byteBufferFromBytes))
+                .withMaxLabels(MAX_LABELS)
+                .withMinConfidence(MIN_CONFIDENCE);
+
+        DetectLabelsResult result = rekognition.detectLabels(request);
+        return result.getLabels();
+    }
+
+    public List<Label> detectLabelsFromStream(InputStream inputStream) {
+        ByteBuffer byteBufferFromStream = awsFileUtils.getByteBufferFromInputStream(inputStream);
+
+        DetectLabelsRequest request = new DetectLabelsRequest()
+                .withImage(new Image()
+                        .withBytes(byteBufferFromStream))
+                .withMaxLabels(MAX_LABELS)
+                .withMinConfidence(MIN_CONFIDENCE);
+
+        DetectLabelsResult result = rekognition.detectLabels(request);
+        return result.getLabels();
+    }
+
+    public List<Label> detectLabelsFromLocalFile(String filePath) {
+        ByteBuffer byteBufferFromLocalFile = awsFileUtils.getByteBufferFromFilePath(filePath);
+
+        DetectLabelsRequest request = new DetectLabelsRequest()
+                .withImage(new Image()
+                        .withBytes(byteBufferFromLocalFile))
+                .withMaxLabels(MAX_LABELS)
+                .withMinConfidence(MIN_CONFIDENCE);
+
+        DetectLabelsResult result = rekognition.detectLabels(request);
+        return result.getLabels();
+    }
+}

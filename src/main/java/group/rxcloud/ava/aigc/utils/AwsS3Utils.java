@@ -5,9 +5,11 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import group.rxcloud.ava.aigc.config.AwsConfig;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+@Component
 public class AwsS3Utils {
 
     private static String bucketName = "";
@@ -25,11 +27,11 @@ public class AwsS3Utils {
                 .build();
     }
 
-//    public String uploadMp3Stream(InputStream inputStream) {
+//    public String uploadFileToS3(InputStream inputStream, String fileName) {
 //
 //    }
 //
 //    public String genPresignedUrlFromS3Key(String s3Key) {
 //
-//    }
+//    }s3Key
 }
