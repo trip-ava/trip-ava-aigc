@@ -19,8 +19,9 @@ import java.util.List;
 @Service
 public class AzureOpenAIService {
 
-    private static ObjectMapper om = new ObjectMapper();
-    private static MediaType mediaType = MediaType.parse("application/json");
+    private static final String MODEL = "gpt-3.5-turbo";
+    private static final ObjectMapper om = new ObjectMapper();
+    private static final MediaType mediaType = MediaType.parse("application/json");
 
     /**
      * 使用text同chatgpt进行对话
@@ -33,6 +34,7 @@ public class AzureOpenAIService {
         ObjectNode dataNode = om.createObjectNode();
         dataNode.putArray("messages")
                 .addAll(arrayNode);
+        dataNode.put("model", MODEL);
 
         try {
             OkHttpClient client = new OkHttpClient()
