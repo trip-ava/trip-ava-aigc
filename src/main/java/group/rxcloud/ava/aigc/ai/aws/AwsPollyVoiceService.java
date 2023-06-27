@@ -19,6 +19,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * AWS Polly 语音合成服务
+ */
 @Service
 public class AwsPollyVoiceService {
 

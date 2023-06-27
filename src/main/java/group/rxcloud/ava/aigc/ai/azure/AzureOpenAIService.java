@@ -15,11 +15,15 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * Azure Open AI 服务
+ */
 @Slf4j
 @Service
 public class AzureOpenAIService {
 
-    private static final String MODEL = "gpt-3.5-turbo";
+    public static final String MODEL = "gpt-3.5-turbo";
+
     private static final ObjectMapper om = new ObjectMapper();
     private static final MediaType mediaType = MediaType.parse("application/json");
 

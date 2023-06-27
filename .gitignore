@@ -1,3 +1,5 @@
 .idea
+target
 
-src/main/resources/aws-config.properties
+/src/main/resources/aws-config.properties
+/src/main/resources/azure-config.properties

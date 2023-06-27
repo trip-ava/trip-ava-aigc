@@ -16,6 +16,9 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+/**
+ * AWS Rekognition 图像识别服务
+ */
 @Service
 public class AwsRekognitionImageService {
 
@@ -28,11 +31,11 @@ public class AwsRekognitionImageService {
     private AwsFileUtils awsFileUtils;
 
     public static void main(String[] args) throws IOException {
-        AwsRekognitionImageService awsPollyVoiceService = new AwsRekognitionImageService();
-        awsPollyVoiceService.init();
-        awsPollyVoiceService.awsFileUtils = new AwsFileUtils();
+        AwsRekognitionImageService awsRekognitionImageService = new AwsRekognitionImageService();
+        awsRekognitionImageService.init();
+        awsRekognitionImageService.awsFileUtils = new AwsFileUtils();
 
-        List<Label> labels = awsPollyVoiceService.detectLabelsFromLocalFile("./demo/awsrekognitionimage_output.jpg");
+        List<Label> labels = awsRekognitionImageService.detectLabelsFromLocalFile("./demo/awsrekognitionimage_output.jpg");
 
         System.out.println(labels);
     }
@@ -49,6 +52,9 @@ public class AwsRekognitionImageService {
                 .build();
     }
 
+    /**
+     * 从S3文件中识别图像关键词
+     */
     public List<Label> detectLabelsFromS3(String bucket, String key) {
         DetectLabelsRequest request = new DetectLabelsRequest()
                 .withImage(new Image()
@@ -62,6 +68,9 @@ public class AwsRekognitionImageService {
         return result.getLabels();
     }
 
+    /**
+     * 从byte[]中识别图像关键词
+     */
     public List<Label> detectLabelsFromBytes(byte[] bytes) {
         ByteBuffer byteBufferFromBytes = awsFileUtils.getByteBufferFromBytes(bytes);
 
@@ -75,6 +84,9 @@ public class AwsRekognitionImageService {
         return result.getLabels();
     }
 
+    /**
+     * 从InputStream中识别图像关键词
+     */
     public List<Label> detectLabelsFromStream(InputStream inputStream) {
         ByteBuffer byteBufferFromStream = awsFileUtils.getByteBufferFromInputStream(inputStream);
 
@@ -88,6 +100,9 @@ public class AwsRekognitionImageService {
         return result.getLabels();
     }
 
+    /**
+     * 从本地文件中识别图像关键词
+     */
     public List<Label> detectLabelsFromLocalFile(String filePath) {
         ByteBuffer byteBufferFromLocalFile = awsFileUtils.getByteBufferFromFilePath(filePath);
 
