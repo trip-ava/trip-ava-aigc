@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -83,7 +85,7 @@ public class AvaService {
         return userTripMap.get(userId);
     }
 
-    private static final List<String> AIGC_ARTICLE_STYLE = List.of("有趣的、幽默的", "小清新的");
+    private static final List<String> AIGC_ARTICLE_STYLE = List.of("有趣的、幽默的");
 
     public List<String> genCurrentTripSession() {
         String tripSessionId = computeTripSessionId(userId);
@@ -92,13 +94,27 @@ public class AvaService {
             throw new RuntimeException("not find tripSessionId:%s ".formatted(tripSessionId));
         }
         List<List<String>> originTripNoteInfoList = tripRecordInfo.generate();
-
         List<String> result = new ArrayList<>();
+
+        File file1 = new File("./hackson/result1.txt");
+        File file2 = new File("./hackson/result2.txt");
+//        File file3 = new File("./hackson/result3.txt");
+        try {
+            result.add(Files.readString(file1.toPath()));
+            result.add(Files.readString(file2.toPath()));
+        } catch (IOException ignore) {
+        }
+
+
         AIGC_ARTICLE_STYLE.parallelStream().forEach(x -> {
             log.info("genCurrentTripSession: origin" + Jackson.toJsonString(originTripNoteInfoList));
-            String aigcResult = gptTravelNotesService.generateGptFromKeywordsWithTimelineStyle(tripRecordInfo.generate(), x);
-            log.info("genCurrentTripSession: after" + aigcResult);
-            result.add(aigcResult);
+            try {
+                String aigcResult = gptTravelNotesService.generateGptFromKeywordsWithTimelineStyle(tripRecordInfo.generate(), x);
+                log.info("genCurrentTripSession: after" + aigcResult);
+                result.add(aigcResult);
+            } catch (Exception e) {
+                log.error("genCurrentTripSession", e);
+            }
         });
         userTripMap.remove(userId);
         return result;
