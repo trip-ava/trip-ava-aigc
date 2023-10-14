@@ -1,3 +1,4 @@
+import com.amazonaws.util.json.Jackson;
 import group.rxcloud.ava.aigc.controller.AIGCController;
 import group.rxcloud.ava.aigc.database.DataBaseService;
 import group.rxcloud.ava.aigc.entity.TripRecordInfo;
@@ -68,7 +69,7 @@ public class AIGCControllerTest {
         aigcController.uploadImage(null, longitude, latitude);
 
         ResponseInfo<?> responseInfo = aigcController.genCurrentTripSession();
-        System.out.println("responseInfo = " + responseInfo);
+        System.out.println("responseInfo = " + Jackson.toJsonString(responseInfo));
     }
 
     public void testVoiceUpload(boolean clear) {
