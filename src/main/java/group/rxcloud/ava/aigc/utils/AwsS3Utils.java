@@ -21,6 +21,10 @@ import java.util.Date;
 @Component
 public class AwsS3Utils {
 
+    /**
+     * URL过期时间, ms。默认3天
+     */
+    public static final int EXPIRE_TIME = 3600 * 1000 * 24 * 3;
     public static String bucketName = "aioverflow";
 
     private AmazonS3 s3client;
@@ -60,7 +64,7 @@ public class AwsS3Utils {
             request.setMetadata(metadata);
             s3client.putObject(request);
             // 获取公网访问URL
-            Date expiration = new Date(System.currentTimeMillis() + 3600000);
+            Date expiration = new Date(System.currentTimeMillis() + EXPIRE_TIME);
             URL url = s3client.generatePresignedUrl(bucketName, keyName, expiration);
             log.info("File uploaded to S3, URL: " + url.toString());
             return url.toString();
@@ -85,7 +89,7 @@ public class AwsS3Utils {
             PutObjectRequest request = new PutObjectRequest(bucketName, keyName, file);
             PutObjectResult result = s3client.putObject(request);
             // 获取公网可以访问的URL
-            Date expiration = new Date(System.currentTimeMillis() + 3600000);
+            Date expiration = new Date(System.currentTimeMillis() + EXPIRE_TIME);
             URL url = s3client.generatePresignedUrl(bucketName, keyName, expiration);
             log.info("File uploaded successfully. URL: " + url.toString());
             return url.toString();

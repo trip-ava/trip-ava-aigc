@@ -51,7 +51,7 @@ public class AwsRekognitionCelebrityService {
     }
 
     /**
-     * 从本地文件中识别图像名人
+     * 从本地文件中识别图像名人，返回名人列表
      */
     public List<Celebrity> recognizeCelebritiesFromLocalFile(String filePath) {
         ByteBuffer byteBufferFromFilePath = awsFileUtils.getByteBufferFromFilePath(filePath);

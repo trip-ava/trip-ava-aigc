@@ -43,9 +43,11 @@ public class AzureOpenAIService {
         try {
             OkHttpClient client = new OkHttpClient()
                     .newBuilder()
-                    .readTimeout(Duration.ofSeconds(30))
+                    .readTimeout(Duration.ofSeconds(60))
                     .build();
-            RequestBody body = RequestBody.create(mediaType, dataNode.toString());
+            String gptRequest = dataNode.toString();
+            log.info("[AzureOpenAIService] gptRequest: {}", gptRequest);
+            RequestBody body = RequestBody.create(mediaType, gptRequest);
             Request request = new Request.Builder()
                     .url(AzureConfig.chatgptUrl)
                     .method("POST", body)
@@ -55,7 +57,9 @@ public class AzureOpenAIService {
                     .build();
             Response response = client.newCall(request)
                     .execute();
-            JsonNode responseNode = om.readTree(response.body().string());
+            String gptResponse = response.body().string();
+            log.info("[AzureOpenAIService] gptRequest: {}", gptRequest);
+            JsonNode responseNode = om.readTree(gptResponse);
             String responseContent = responseNode
                     .get("choices")
                     .get(0)
