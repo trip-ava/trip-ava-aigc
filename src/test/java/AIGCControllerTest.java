@@ -49,6 +49,28 @@ public class AIGCControllerTest {
         testTextUpload(true);
     }
 
+    @Test
+    public void test() {
+        UploadTextRequestData requestData = new UploadTextRequestData();
+        requestData.setText("早上，我从呼伦贝尔古城酒店启程");
+        requestData.setLatitude(latitude);
+        requestData.setLongitude(longitude);
+        aigcController.uploadText(requestData);
+
+
+        aigcController.uploadVoice(null, longitude, latitude);
+        aigcController.uploadVoice(null, longitude, latitude);
+
+        requestData.setText("好多牛，羊，蒙古包");
+        aigcController.uploadText(requestData);
+
+        aigcController.uploadImage(null, longitude, latitude);
+        aigcController.uploadImage(null, longitude, latitude);
+
+        ResponseInfo<?> responseInfo = aigcController.genCurrentTripSession();
+        System.out.println("responseInfo = " + responseInfo);
+    }
+
     public void testVoiceUpload(boolean clear) {
         if (clear) {
             dataBaseService.clear();
