@@ -1,5 +1,6 @@
 package group.rxcloud.ava.aigc.entity.noteinfo;
 
+import group.rxcloud.ava.aigc.ai.aws.AwsTranscribeVoiceService;
 import group.rxcloud.ava.aigc.entity.SingleNoteInfoType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public final class VoiceSingleNoteInfo extends AbstractSingleNoteInfo {
     private File voice;
+    private AwsTranscribeVoiceService.Transcript transcript;
 
     public VoiceSingleNoteInfo(File voice) {
         super(LocalDateTime.now(), SingleNoteInfoType.VOICE);

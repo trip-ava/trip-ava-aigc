@@ -13,6 +13,7 @@ import software.amazon.awssdk.services.transcribe.model.*;
 
 import javax.annotation.PostConstruct;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -52,6 +53,16 @@ public class AwsTranscribeVoiceService {
 
         awsTranscribeVoiceService.awsS3Utils.mp3UpToS3ReUrl("AwsPollyVoiceService.mp3", "./demo/AwsPollyVoiceService.mp3");
         awsTranscribeVoiceService.transMp3ToText("AwsPollyVoiceService.mp3");
+    }
+
+    public Transcript transferMp3ToText(String fileName, File file) {
+        awsS3Utils.mp3UpToS3ReUrl(fileName, file.getPath());
+        Transcript transcript = this.transMp3ToText(fileName);
+        if (transcript == null) {
+            throw new RuntimeException("transfer mp3 to text fail");
+        }
+        return transcript;
+
     }
 
     /**

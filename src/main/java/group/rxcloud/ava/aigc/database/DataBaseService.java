@@ -1,10 +1,11 @@
 package group.rxcloud.ava.aigc.database;
 
+import com.amazonaws.services.rekognition.model.Label;
+import group.rxcloud.ava.aigc.ai.aws.AwsTranscribeVoiceService;
 import group.rxcloud.ava.aigc.entity.TripRecordInfo;
 import group.rxcloud.ava.aigc.entity.noteinfo.ImageSingleNoteInfo;
 import group.rxcloud.ava.aigc.entity.noteinfo.TextSingleNoteInfo;
 import group.rxcloud.ava.aigc.entity.noteinfo.VoiceSingleNoteInfo;
-import group.rxcloud.ava.aigc.entity.SingleNoteInfoType;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -17,13 +18,18 @@ public class DataBaseService {
 
     private static final List<TripRecordInfo> TRIP_RECORD_INFO_TABLE = new ArrayList<>();
 
-    public void addNewFileRecord(String userId, String tripSessionId, File file, SingleNoteInfoType noteInfoType) {
+    public void addNewVoiceRecord(String userId, String tripSessionId, File file, AwsTranscribeVoiceService.Transcript transcript) {
         TripRecordInfo tripRecordInfo = find(userId, tripSessionId);
-        switch (noteInfoType) {
-            case VOICE -> tripRecordInfo.getSingleNoteInfoList().add(new VoiceSingleNoteInfo(file));
-            case IMAGE -> tripRecordInfo.getSingleNoteInfoList().add(new ImageSingleNoteInfo(file));
-            default -> throw new RuntimeException("noteInfoType:%s not impl".formatted(noteInfoType.getCode()));
-        }
+        VoiceSingleNoteInfo voiceSingleNoteInfo = new VoiceSingleNoteInfo(file);
+        voiceSingleNoteInfo.setTranscript(transcript);
+        tripRecordInfo.getSingleNoteInfoList().add(voiceSingleNoteInfo);
+    }
+
+    public void addNewImageRecord(String userId, String tripSessionId, File file, List<Label> labels) {
+        TripRecordInfo tripRecordInfo = find(userId, tripSessionId);
+        ImageSingleNoteInfo imageSingleNoteInfo = new ImageSingleNoteInfo(file);
+        imageSingleNoteInfo.setLabels(labels);
+        tripRecordInfo.getSingleNoteInfoList().add(imageSingleNoteInfo);
     }
 
     public void addNewTextRecord(String userId, String tripSessionId, String text) {
