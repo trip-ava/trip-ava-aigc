@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static group.rxcloud.ava.aigc.ai.aws.AwsTransTextService.EN;
@@ -85,17 +83,24 @@ public class AvaService {
         return userTripMap.get(userId);
     }
 
-    public String genCurrentTripSession() {
+    private static final List<String> AIGC_ARTICLE_STYLE = List.of("有趣的、幽默的", "小清新的");
+
+    public List<String> genCurrentTripSession() {
         String tripSessionId = computeTripSessionId(userId);
         TripRecordInfo tripRecordInfo = dataBaseService.getTripRecordInfoByTripSessionId(tripSessionId);
         if (tripRecordInfo == null) {
             throw new RuntimeException("not find tripSessionId:%s ".formatted(tripSessionId));
         }
         List<List<String>> originTripNoteInfoList = tripRecordInfo.generate();
-        log.info("genCurrentTripSession: origin" + Jackson.toJsonString(originTripNoteInfoList));
-        String aigcResult = gptTravelNotesService.generateGptFromKeywordsWithTimeline(tripRecordInfo.generate());
-        log.info("genCurrentTripSession: after" + aigcResult);
+
+        List<String> result = new ArrayList<>();
+        AIGC_ARTICLE_STYLE.parallelStream().forEach(x -> {
+            log.info("genCurrentTripSession: origin" + Jackson.toJsonString(originTripNoteInfoList));
+            String aigcResult = gptTravelNotesService.generateGptFromKeywordsWithTimelineStyle(tripRecordInfo.generate(), x);
+            log.info("genCurrentTripSession: after" + aigcResult);
+            result.add(aigcResult);
+        });
         userTripMap.remove(userId);
-        return aigcResult;
+        return result;
     }
 }
