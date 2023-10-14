@@ -35,7 +35,7 @@ public class AwsRekognitionImageService {
         awsRekognitionImageService.init();
         awsRekognitionImageService.awsFileUtils = new AwsFileUtils();
 
-        List<Label> labels = awsRekognitionImageService.detectLabelsFromLocalFile("./demo/awsrekognitionimage_output.jpg");
+        List<Label> labels = awsRekognitionImageService.detectLabelsFromLocalFile("./demo/test1/input2.jpg");
 
         System.out.println(labels);
     }
