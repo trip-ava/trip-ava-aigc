@@ -8,10 +8,7 @@ import group.rxcloud.ava.aigc.entity.Position;
 import group.rxcloud.ava.aigc.entity.request.UploadTextRequestData;
 import group.rxcloud.ava.aigc.entity.response.ResponseInfo;
 import group.rxcloud.ava.aigc.service.AvaService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -52,6 +49,15 @@ public class AIGCController {
             }
             avaService.uploadText(requestData.getText(), new Position(requestData.getLongitude(), requestData.getLatitude()));
             return ResponseInfo.buildSuccess("upload success");
+        } catch (Throwable e) {
+            return ResponseInfo.buildError("service error");
+        }
+    }
+
+    @GetMapping("/genCurrentTripSession")
+    public ResponseInfo<?> genCurrentTripSession() {
+        try {
+            return ResponseInfo.buildSuccess(avaService.genCurrentTripSession());
         } catch (Throwable e) {
             return ResponseInfo.buildError("service error");
         }

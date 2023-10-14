@@ -33,6 +33,15 @@ public class AIGCControllerTest {
     private DataBaseService dataBaseService;
 
     @Test
+    public void testGenCurrentTripSession() {
+        this.testVoiceUpload();
+        this.testImageUpload();
+        this.testImageUpload();
+        ResponseInfo<?> responseInfo = aigcController.genCurrentTripSession();
+        System.out.println("responseInfo.getData() = " + responseInfo.getData());
+    }
+
+    @Test
     public void testVoiceUpload() {
         dataBaseService.clear();
         ResponseInfo<?> responseInfo = aigcController.uploadVoice(fileToMultipartFile(new File(mp3FileLocation)), longitude, latitude);

@@ -13,4 +13,13 @@
 
 ### 2. 
 
-+ 
+
+
+```shell
+docker run -p 3306:3306 --name mysql \
+-v /tmp/mysql/log:/var/log/mysql \
+-v /tmp/mysql/data:/var/lib/mysql \
+-v /tmp/mysql/conf:/etc/mysql \
+-e MYSQL_ROOT_PASSWORD=hardcore  \
+-d mysql:5.7
+```
