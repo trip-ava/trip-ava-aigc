@@ -18,7 +18,7 @@ public class GptRichEmojiService {
     private AzureOpenAIService azureOpenAIService;
 
     private static final String GPT_TRAVEL_NOTE_TEMPLATE =
-            "请将以下旅行游记加工为html富文本格式，对于地点展示蓝色，对于旅行相关的关键词，展示橙色：\n" + "%s";
+            "请将以下旅行游记加工为html富文本格式，对于地点展示蓝色，对于旅行相关的关键词，展示橙色。同时使用Emoji风格编辑以下段落，该风格以引人入胜的标题、每个段落中包含表情符号和在末尾添加相关标签为特点。请确保保持原文的意思。：\n" + "%s";
 
     public static void main(String[] args) {
         GptRichEmojiService gptRichEmojiService = new GptRichEmojiService();
