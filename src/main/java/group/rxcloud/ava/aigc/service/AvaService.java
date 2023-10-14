@@ -4,6 +4,7 @@ import com.amazonaws.services.rekognition.model.Label;
 import group.rxcloud.ava.aigc.ai.aws.AwsRekognitionImageService;
 import group.rxcloud.ava.aigc.ai.aws.AwsTranscribeVoiceService;
 import group.rxcloud.ava.aigc.database.DataBaseService;
+import group.rxcloud.ava.aigc.entity.Position;
 import group.rxcloud.ava.aigc.entity.TripRecordInfo;
 import org.springframework.stereotype.Service;
 
@@ -36,25 +37,25 @@ public class AvaService {
      */
     private static final String userId = "ava";
 
-    public void uploadVoice(File voiceFile) {
+    public void uploadVoice(File voiceFile, Position position) {
         String tripSessionId = computeTripSessionId(userId);
         // 语音转文字
         AwsTranscribeVoiceService.Transcript transcript = awsTranscribeVoiceService.transferMp3ToText(voiceFile.getName(), voiceFile);
         if (transcript == null) {
             throw new RuntimeException("get transfer text fail");
         }
-        dataBaseService.addNewVoiceRecord(userId, tripSessionId, voiceFile, transcript);
+        dataBaseService.addNewVoiceRecord(userId, tripSessionId, voiceFile, transcript, position);
     }
 
-    public void uploadImage(File imageFile) {
+    public void uploadImage(File imageFile, Position position) {
         String tripSessionId = computeTripSessionId(userId);
         List<Label> labels = awsRekognitionImageService.detectLabelsFromLocalFile(imageFile.getPath());
-        dataBaseService.addNewImageRecord(userId, tripSessionId, imageFile, labels);
+        dataBaseService.addNewImageRecord(userId, tripSessionId, imageFile, labels, position);
     }
 
-    public void uploadText(String text) {
+    public void uploadText(String text, Position position) {
         String tripSessionId = computeTripSessionId(userId);
-        dataBaseService.addNewTextRecord(userId, tripSessionId, text);
+        dataBaseService.addNewTextRecord(userId, tripSessionId, text, position);
     }
 
     public TripRecordInfo getTripShareNoteInfo(String tripSessionId) {

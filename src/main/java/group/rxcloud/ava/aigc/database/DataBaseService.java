@@ -2,7 +2,9 @@ package group.rxcloud.ava.aigc.database;
 
 import com.amazonaws.services.rekognition.model.Label;
 import group.rxcloud.ava.aigc.ai.aws.AwsTranscribeVoiceService;
+import group.rxcloud.ava.aigc.entity.Position;
 import group.rxcloud.ava.aigc.entity.TripRecordInfo;
+import group.rxcloud.ava.aigc.entity.TripSessionAigcGenerateInfo;
 import group.rxcloud.ava.aigc.entity.noteinfo.ImageSingleNoteInfo;
 import group.rxcloud.ava.aigc.entity.noteinfo.TextSingleNoteInfo;
 import group.rxcloud.ava.aigc.entity.noteinfo.VoiceSingleNoteInfo;
@@ -17,24 +19,26 @@ import java.util.stream.Collectors;
 public class DataBaseService {
 
     private static final List<TripRecordInfo> TRIP_RECORD_INFO_TABLE = new ArrayList<>();
+    private static final List<TripSessionAigcGenerateInfo> TRIP_SESSION_AIGC_GENERATE_INFO_TABLE = new ArrayList<>();
 
-    public void addNewVoiceRecord(String userId, String tripSessionId, File file, AwsTranscribeVoiceService.Transcript transcript) {
+    public void addNewVoiceRecord(String userId, String tripSessionId, File file, AwsTranscribeVoiceService.Transcript transcript,
+                                  Position position) {
         TripRecordInfo tripRecordInfo = find(userId, tripSessionId);
-        VoiceSingleNoteInfo voiceSingleNoteInfo = new VoiceSingleNoteInfo(file);
+        VoiceSingleNoteInfo voiceSingleNoteInfo = new VoiceSingleNoteInfo(file, position);
         voiceSingleNoteInfo.setTranscript(transcript);
         tripRecordInfo.getSingleNoteInfoList().add(voiceSingleNoteInfo);
     }
 
-    public void addNewImageRecord(String userId, String tripSessionId, File file, List<Label> labels) {
+    public void addNewImageRecord(String userId, String tripSessionId, File file, List<Label> labels, Position position) {
         TripRecordInfo tripRecordInfo = find(userId, tripSessionId);
-        ImageSingleNoteInfo imageSingleNoteInfo = new ImageSingleNoteInfo(file);
+        ImageSingleNoteInfo imageSingleNoteInfo = new ImageSingleNoteInfo(file, position);
         imageSingleNoteInfo.setLabels(labels);
         tripRecordInfo.getSingleNoteInfoList().add(imageSingleNoteInfo);
     }
 
-    public void addNewTextRecord(String userId, String tripSessionId, String text) {
+    public void addNewTextRecord(String userId, String tripSessionId, String text, Position position) {
         TripRecordInfo tripRecordInfo = find(userId, tripSessionId);
-        tripRecordInfo.getSingleNoteInfoList().add(new TextSingleNoteInfo(text));
+        tripRecordInfo.getSingleNoteInfoList().add(new TextSingleNoteInfo(text, position));
     }
 
     private TripRecordInfo find(String userId, String tripSessionId) {

@@ -4,6 +4,7 @@ package group.rxcloud.ava.aigc.controller;
 import java.io.File;
 import java.io.IOException;
 
+import group.rxcloud.ava.aigc.entity.Position;
 import group.rxcloud.ava.aigc.entity.request.UploadTextRequestData;
 import group.rxcloud.ava.aigc.entity.response.ResponseInfo;
 import group.rxcloud.ava.aigc.service.AvaService;
@@ -22,9 +23,10 @@ public class AIGCController {
     private AvaService avaService;
 
     @PostMapping("/upload/voice")
-    public ResponseInfo<?> uploadVoice(@RequestParam("file") MultipartFile file) {
+    public ResponseInfo<?> uploadVoice(@RequestParam("file") MultipartFile file, @RequestParam("longitude") String longitude,
+                                       @RequestParam("latitude") String latitude) {
         try {
-            avaService.uploadVoice(multipartFileToFile(file));
+            avaService.uploadVoice(multipartFileToFile(file), new Position(longitude, latitude));
             return ResponseInfo.buildSuccess("upload success");
         } catch (Throwable e) {
             return ResponseInfo.buildError("service error");
@@ -32,9 +34,10 @@ public class AIGCController {
     }
 
     @PostMapping("/upload/image")
-    public ResponseInfo<?> uploadImage(@RequestParam("file") MultipartFile file) {
+    public ResponseInfo<?> uploadImage(@RequestParam("file") MultipartFile file, @RequestParam("longitude") String longitude,
+                                       @RequestParam("latitude") String latitude) {
         try {
-            avaService.uploadImage(multipartFileToFile(file));
+            avaService.uploadImage(multipartFileToFile(file), new Position(longitude, latitude));
             return ResponseInfo.buildSuccess("upload success");
         } catch (Throwable e) {
             return ResponseInfo.buildError("service error");
@@ -47,7 +50,7 @@ public class AIGCController {
             if (requestData == null || requestData.isIllegal()) {
                 return ResponseInfo.buildError("illegal param");
             }
-            avaService.uploadText(requestData.getText());
+            avaService.uploadText(requestData.getText(), new Position(requestData.getLongitude(), requestData.getLatitude()));
             return ResponseInfo.buildSuccess("upload success");
         } catch (Throwable e) {
             return ResponseInfo.buildError("service error");

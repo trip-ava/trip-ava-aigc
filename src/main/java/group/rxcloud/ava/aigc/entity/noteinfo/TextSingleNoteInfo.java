@@ -1,11 +1,11 @@
 package group.rxcloud.ava.aigc.entity.noteinfo;
 
+import group.rxcloud.ava.aigc.entity.Position;
 import group.rxcloud.ava.aigc.entity.SingleNoteInfoType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,9 +13,8 @@ import java.time.LocalDateTime;
 public final class TextSingleNoteInfo extends AbstractSingleNoteInfo {
     private String text;
 
-
-    public TextSingleNoteInfo(String text) {
-        super(LocalDateTime.now(), SingleNoteInfoType.TEXT);
+    public TextSingleNoteInfo(String text, Position position) {
+        super(SingleNoteInfoType.TEXT, position);
         this.text = text;
     }
 }

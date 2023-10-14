@@ -8,12 +8,19 @@ import lombok.Setter;
 @Setter
 public class UploadTextRequestData {
     private String text;
-
+    private String longitude;
+    private String latitude;
     public boolean isIllegal() {
-        if (text == null ||
-                StringUtils.isEmpty(text.trim())) {
+        if (stringIsIllegal(text)
+                || stringIsIllegal(longitude)
+                || stringIsIllegal(latitude)) {
             return true;
         }
         return false;
+    }
+
+    private static boolean stringIsIllegal(String str) {
+        return str == null ||
+                StringUtils.isEmpty(str.trim());
     }
 }

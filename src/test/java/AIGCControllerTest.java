@@ -1,6 +1,7 @@
 import group.rxcloud.ava.aigc.controller.AIGCController;
 import group.rxcloud.ava.aigc.database.DataBaseService;
 import group.rxcloud.ava.aigc.entity.TripRecordInfo;
+import group.rxcloud.ava.aigc.entity.noteinfo.AbstractSingleNoteInfo;
 import group.rxcloud.ava.aigc.entity.noteinfo.ImageSingleNoteInfo;
 import group.rxcloud.ava.aigc.entity.noteinfo.TextSingleNoteInfo;
 import group.rxcloud.ava.aigc.entity.noteinfo.VoiceSingleNoteInfo;
@@ -19,11 +20,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-@SpringBootTest(classes=group.rxcloud.ava.aigc.SpringMain.class)
+@SpringBootTest(classes = group.rxcloud.ava.aigc.SpringMain.class)
 public class AIGCControllerTest {
     public static String mp3FileLocation = "/Users/wangjie_fourth/IdeaProjects/temp/trip-ava-aigc/demo/AwsPollyVoiceService.mp3";
     public static String imageFileLocation = "/Users/wangjie_fourth/IdeaProjects/temp/trip-ava-aigc/demo/awsrekognitioncelebrity_jinitaimei.jpeg";
     private static final String userId = "ava";
+    private static final String longitude = "111";
+    private static final String latitude = "222";
     @Resource
     private AIGCController aigcController;
     @Resource
@@ -32,26 +35,42 @@ public class AIGCControllerTest {
     @Test
     public void testVoiceUpload() {
         dataBaseService.clear();
-        ResponseInfo<?> responseInfo = aigcController.uploadVoice(fileToMultipartFile(new File(mp3FileLocation)));
+        ResponseInfo<?> responseInfo = aigcController.uploadVoice(fileToMultipartFile(new File(mp3FileLocation)), longitude, latitude);
         Assertions.assertNotNull(responseInfo);
         Assertions.assertEquals(1, responseInfo.getResponseCode());
 
         List<TripRecordInfo> tripRecordInfoList = dataBaseService.getTripRecordInfoByUserId(userId);
         Assertions.assertEquals(1, tripRecordInfoList.size());
-        Assertions.assertTrue(tripRecordInfoList.get(0).getSingleNoteInfoList().stream().allMatch(x -> x instanceof VoiceSingleNoteInfo));
+        Assertions.assertTrue(tripRecordInfoList.get(0).getSingleNoteInfoList().stream().allMatch(x -> {
+            if (!(x instanceof VoiceSingleNoteInfo)) {
+                return false;
+            }
+            if (!abstractSingleNoteInfoVerify((AbstractSingleNoteInfo) x)) {
+                return false;
+            }
+            return true;
+        }));
     }
 
     @Test
     public void testImageUpload() {
         dataBaseService.clear();
 
-        ResponseInfo<?> responseInfo = aigcController.uploadImage(fileToMultipartFile(new File(imageFileLocation)));
+        ResponseInfo<?> responseInfo = aigcController.uploadImage(fileToMultipartFile(new File(imageFileLocation)), longitude, latitude);
         Assertions.assertNotNull(responseInfo);
         Assertions.assertEquals(1, responseInfo.getResponseCode());
 
         List<TripRecordInfo> tripRecordInfoList = dataBaseService.getTripRecordInfoByUserId(userId);
         Assertions.assertEquals(1, tripRecordInfoList.size());
-        Assertions.assertTrue(tripRecordInfoList.get(0).getSingleNoteInfoList().stream().allMatch(x -> x instanceof ImageSingleNoteInfo));
+        Assertions.assertTrue(tripRecordInfoList.get(0).getSingleNoteInfoList().stream().allMatch(x -> {
+            if (!(x instanceof ImageSingleNoteInfo)) {
+                return false;
+            }
+            if (!abstractSingleNoteInfoVerify((AbstractSingleNoteInfo) x)) {
+                return false;
+            }
+            return true;
+        }));
     }
 
     @Test
@@ -60,6 +79,8 @@ public class AIGCControllerTest {
 
         UploadTextRequestData requestData = new UploadTextRequestData();
         requestData.setText("test function");
+        requestData.setLatitude(latitude);
+        requestData.setLongitude(longitude);
 
         ResponseInfo<?> responseInfo = aigcController.uploadText(requestData);
         Assertions.assertNotNull(responseInfo);
@@ -67,7 +88,15 @@ public class AIGCControllerTest {
 
         List<TripRecordInfo> tripRecordInfoList = dataBaseService.getTripRecordInfoByUserId(userId);
         Assertions.assertEquals(1, tripRecordInfoList.size());
-        Assertions.assertTrue(tripRecordInfoList.get(0).getSingleNoteInfoList().stream().allMatch(x -> x instanceof TextSingleNoteInfo));
+        Assertions.assertTrue(tripRecordInfoList.get(0).getSingleNoteInfoList().stream().allMatch(x -> {
+            if (!(x instanceof TextSingleNoteInfo)) {
+                return false;
+            }
+            if (!abstractSingleNoteInfoVerify((AbstractSingleNoteInfo) x)) {
+                return false;
+            }
+            return true;
+        }));
     }
 
     private static MultipartFile fileToMultipartFile(File file) {
@@ -82,5 +111,20 @@ public class AIGCControllerTest {
         }
         return new MockMultipartFile(name,
                 originalFileName, contentType, content);
+    }
+    private static boolean abstractSingleNoteInfoVerify(AbstractSingleNoteInfo abstractSingleNoteInfo) {
+        if (!abstractSingleNoteInfo.getPosition().getLatitude().equals(latitude)) {
+            return false;
+        }
+        if (!abstractSingleNoteInfo.getPosition().getLongitude().equals(longitude)) {
+            return false;
+        }
+        if (abstractSingleNoteInfo.getCreateDateTime() == null) {
+            return false;
+        }
+        if (abstractSingleNoteInfo.getNoteInfoType() == null) {
+            return false;
+        }
+        return true;
     }
 }

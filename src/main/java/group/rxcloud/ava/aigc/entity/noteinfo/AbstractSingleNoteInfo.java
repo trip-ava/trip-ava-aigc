@@ -1,5 +1,6 @@
 package group.rxcloud.ava.aigc.entity.noteinfo;
 
+import group.rxcloud.ava.aigc.entity.Position;
 import group.rxcloud.ava.aigc.entity.SingleNoteInfoType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +14,11 @@ import java.time.LocalDateTime;
 public sealed abstract class AbstractSingleNoteInfo implements SingleNoteInfo permits ImageSingleNoteInfo, TextSingleNoteInfo, VoiceSingleNoteInfo {
     private LocalDateTime createDateTime;
     private SingleNoteInfoType noteInfoType;
+    private Position position;
 
-    public AbstractSingleNoteInfo(LocalDateTime createDateTime, SingleNoteInfoType noteInfoType) {
-        this.createDateTime = createDateTime;
+    public AbstractSingleNoteInfo(SingleNoteInfoType noteInfoType, Position position) {
+        this.createDateTime = LocalDateTime.now();
         this.noteInfoType = noteInfoType;
+        this.position = position;
     }
 }
