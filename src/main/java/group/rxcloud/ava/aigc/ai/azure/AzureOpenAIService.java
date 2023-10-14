@@ -51,8 +51,8 @@ public class AzureOpenAIService {
                     .method("POST", body)
                     .addHeader("Content-Type", "application/json; charset=utf-8")
                     .addHeader("api-type", "azure_ad")
-                    .addHeader("Authorization", "Bearer " + AzureConfig.azureToken).
-                    build();
+                    .addHeader("Authorization", "Bearer " + AzureConfig.azureToken)
+                    .build();
             Response response = client.newCall(request)
                     .execute();
             JsonNode responseNode = om.readTree(response.body().string());
