@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # AVA Backend Service
+  backend:
+    build:
+      context: ./trip-ava-aigc
+      dockerfile: Dockerfile
+    container_name: ava-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Server Configuration
+      - SERVER_PORT=8080
+      # AWS Configuration (optional - for voice features)
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_REGION=${AWS_REGION:-ap-southeast-1}
+      # OpenAI Configuration (optional - for LLM features)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_API_ENDPOINT=${OPENAI_API_ENDPOINT:-https://api.openai.com/v1}
+      # Spring Profile
+      - SPRING_PROFILES_ACTIVE=prod
+    volumes:
+      # Mount for logs
+      - backend-logs:/app/logs
+    networks:
+      - ava-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/ava/hello"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # AVA Frontend Service (optional - if you want to run frontend in Docker too)
+  frontend:
+    build:
+      context: ./trip-ava
+      dockerfile: Dockerfile
+    container_name: ava-frontend
+    ports:
+      - "13579:80"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080
+      - VITE_USE_MOCK_API=false
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - ava-network
+    restart: unless-stopped
+
+networks:
+  ava-network:
+    driver: bridge
+
+volumes:
+  backend-logs:
+    driver: local

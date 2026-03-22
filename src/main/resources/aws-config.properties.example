@@ -1,0 +1,12 @@
+# AWS Configuration Example
+# Copy this file to aws-config.properties and fill in your actual AWS credentials
+# DO NOT commit aws-config.properties to version control
+
+# AWS Access Key ID
+accessKey=your_aws_access_key_id_here
+
+# AWS Secret Access Key
+secretKey=your_aws_secret_access_key_here
+
+# AWS Region (optional, defaults to ap-southeast-1)
+region=ap-southeast-1
